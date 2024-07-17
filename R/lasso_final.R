@@ -36,7 +36,6 @@ mod$beta@x # coefficients values
 # addaptive lasso
 # Ridge weights with gamma = 1
 g = 1
-set.seed(1)
 modelr <- cv.glmnet(x, df$outcome, alpha = 0)
 coefr <- as.matrix(coef(modelr, s = modelr$lambda.min))
 w.r <- 1/(abs(coefr[-1,]))^g
