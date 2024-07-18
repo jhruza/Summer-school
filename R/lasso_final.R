@@ -234,24 +234,24 @@ ggplot(df_final_cleaned, aes(x = other_dx, y = PPS, fill = other_dx)) +
 # tissue_source_site
 table(df_final_cleaned$tissue_source_site)
 
-ggplot(df_final_cleaned, aes(x = tissue_source_site, y = PPS, fill = tissue_source_site)) +
+boxplot<-ggplot(df_final_cleaned, aes(x = tissue_source_site, y = PPS, fill = tissue_source_site)) +
   geom_boxplot() +
   labs(title = "Boxplot of Values Stratified by Group",
        x = "Group",
-       y = "Value") +
+       y = "PPS") +
   theme_minimal() +
   theme(
     plot.title = element_text(hjust = 0.5, size = 30, face = "bold"),  # Title font size and style
-    axis.title.x = element_text(size = 50),  # X-axis label font size
-    axis.title.y = element_text(size = 14),  # Y-axis label font size
-    axis.text.x = element_text(size = 50, angle = 45, hjust = 1),  # X-axis tick label font size and rotation
-    axis.text.y = element_text(size = 12),  # Y-axis tick label font size
+    axis.title.x = element_text(size = 30),  # X-axis label font size
+    axis.title.y = element_text(size = 30),  # Y-axis label font size
+    axis.text.x = element_text(size = 30, angle = 45, hjust = 1),  # X-axis tick label font size and rotation
+    axis.text.y = element_text(size = 30),  # Y-axis tick label font size
     legend.title = element_text(size = 14, face = "bold"),  # Legend title font size and style
     legend.text = element_text(size = 12),  # Legend text font size,
     legend.position = "none"
   ) +
   scale_fill_brewer(palette = "Set3")
-
+ggsave("box_plot_tissue.pdf", boxplot)
 
 # Compute the analysis of variance
 res.aov <- aov(PPS ~ tissue_source_site, data = df_final_cleaned)
