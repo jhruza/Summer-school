@@ -1,4 +1,5 @@
 library(glmnet)
+library(ggplot2)
 library(dplyr)
 library(ISLR)
 library(ggfortify)
@@ -52,9 +53,6 @@ alasso$beta@x # coefficients values
 alasso$beta@Dimnames[[1]][alasso$beta@i] #names
 
 
-# Load required libraries
-library(glmnet)
-library(ggplot2)
 
 # Initialize a list to store the variable indices for each iteration
 variable_indices_list <- vector("list", 100)
@@ -99,13 +97,15 @@ ggplot(containment_data, aes(x = List, y = ContainmentCount)) +
        y = "Containment Count") +
   theme_minimal()
 
+#threshold is set choose that appear half of the time
+protein_selected <- alasso$beta@Dimnames[[1]][index]
 
 
 ###protein prognostic score PPS
-formula_string <- paste("outcome ~", paste(alasso$beta@Dimnames[[1]][alasso$beta@i], collapse = " + "))
+formula_string <- paste("outcome ~", paste(protein_selected, collapse = " + "))
 formula <- as.formula(formula_string)
 PSS.model  <- glm(formula_string, data = df, family = "binomial")
-PPS <- predict(PSS.model, df[ ,alasso$beta@Dimnames[[1]][alasso$beta@i]], type= "response" )
+PPS <- predict(PSS.model, df[ ,protein_selected], type= "response" )
 hist(PPS, breaks=30)
 
 
@@ -126,7 +126,7 @@ library(marginaleffects)
 # data = data
 # outcome = outcome
 
-data$PPS = predict()
+data$PPS = PPS
 
 W = weightit(tr ~ confounders, data = data, method = "glm", estimand = "ATE")
 
