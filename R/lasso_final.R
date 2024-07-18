@@ -5,6 +5,8 @@ library(ISLR)
 library(ggfortify)
 library(fastDummies)
 library(cobalt)
+library(WeightIt)
+library(marginaleffects)
 set.seed(7)
 
 
@@ -158,27 +160,31 @@ formula_str <- paste("postoperative_rx_tx ~", paste(colnames(results)[-1], colla
 formula_obj <- as.formula(formula_str)
 
 
-# Load the love.plot package if not already loaded
-if (!requireNamespace("love.plot", quietly = TRUE)) {
-  install.packages("love.plot")
-  library(love.plot)
-}
 
 W = weightit(formula_obj, data = results, 
             method = "glm", estimand = "ATE", stabilize = TRUE)
 
 # Use love.plot with the formula object
-love.plot(W, data = results, abs = TRUE, thresholds = 0.1)
+love_plot <- love.plot(W, data = results, abs = TRUE, thresholds = 0.1, size=5)
 
+theme_custom <- theme(
+  axis.text = element_text(size = 15),  # Adjust font size of axis text
+  axis.title = element_text(size = 15, face = "bold"),  # Adjust font size and style of axis titles
+  plot.title = element_text(size = 15, face = "italic"),  # Adjust font size and style of plot title
+  aspect.ratio = 0.8,
 
+)
+
+# Apply the custom theme to the plot
+
+love_plot_with_theme <- love_plot + theme_custom
+
+# Save plot as PDF
+ggsave("love_plot_output.pdf", love_plot_with_theme, width = 10, height = 6)
 
 # CODE FOR PPS, CATE and so on
 
-library(WeightIt)
-library(marginaleffects)
-
 #Logstic regression with postoperative radiation as outcome (PROPENSITY SCORE)
-
 df_final_cleaned$PPS = PPS
 
 fit1 <- glm(postoperative_rx_tx ~ gender + white + age_at_initial_pathologic_diagnosis + year_of_initial_pathologic_diagnosis + 
